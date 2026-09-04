@@ -15,7 +15,7 @@ export const QrCameraView: React.FC<QrCameraViewProps> = ({ onScan }) => {
             <Scanner
                 onScan={onScan}
                 constraints={{ facingMode: 'environment' }} // リアカメラを優先
-                components={{ audio: false }}    // 読み取り時の効果音オフ
+                // components={{ audio: false }}    // 読み取り時の効果音オフ
             />
         </div>
     )

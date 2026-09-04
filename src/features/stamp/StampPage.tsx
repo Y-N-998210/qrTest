@@ -1,10 +1,9 @@
 /**
  * @file QRスキャン画面
  */
-import React from "react";
+
 import { useQrScanner } from "./hooks/useQrScanner";
 import { QrCameraView } from "./components/QrCameraView";
-import { stampService } from "./services/stampService";
 
 export default function StampPage() {
     // カスタムフックからスキャン処理・結果・エラー表示用状態を取得
