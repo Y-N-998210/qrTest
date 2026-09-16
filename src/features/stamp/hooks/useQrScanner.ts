@@ -2,7 +2,7 @@
  * @file QRスキャンの動作状態(成功・失敗・エラー) を管理するカスタムフック
  */
 import { useState } from "react";
-import { stampService } from "../services/stampService";
+import { stampService } from "../services/stampService"; // スタンプ獲得、イベント情報処理を行うビジネスロジックサービス
 import type { ScanResultState } from "../types/index";
 import type { EventItem } from "../types/event";
 import type { IDetectedBarcode } from "@yudiel/react-qr-scanner";
@@ -10,7 +10,7 @@ import type { IDetectedBarcode } from "@yudiel/react-qr-scanner";
 export function useQrScanner() {
     // スキャン結果データ(成功・獲得済み情報など)
     const [scanResult, setScanResult] = useState<ScanResultState | null>(null);
-
+    // スキャンしたQRコードに対応するイベント詳細情報
     const [scannedEvent, setScannedEvent] = useState<EventItem | null>(null);
     // エラーメッセージ(無効なQRコードなど)
     const [error, setError] = useState<string | null>(null);
@@ -26,7 +26,7 @@ export function useQrScanner() {
         // 読み取った生のテキスト値を取得
         const rawValue = detectedCodes[0].rawValue;
 
-        // 1.フォーマット検証
+        // フォーマット検証
         const validation = stampService.parseQrCode(rawValue);
 
         if (!validation.isValid) {
@@ -34,7 +34,7 @@ export function useQrScanner() {
             return;
         }
 
-        // 2.正しいQRコードであればローカルストレージへ保存処理
+        // 正しいQRコードであればローカルストレージ等へ保存処理
         if (validation.spotId) {
             const result = await stampService.saveStamp(validation.spotId);
             setScanResult({

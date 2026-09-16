@@ -64,7 +64,7 @@ export const stampService = {
     },
 
     /**
-     * localStorage から過去に獲得したスタンプIDのリストを取得する
+     * 過去に獲得したスタンプIDのリストを取得する
      */
     async getSavedStamps(): Promise<string[]> {
         return await repository.getUnlockedEventIds();
