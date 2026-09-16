@@ -3,12 +3,15 @@
  */
 import { useState } from "react";
 import { stampService } from "../services/stampService";
-import { type ScanResultState } from "../types/index";
-import { type IDetectedBarcode } from "@yudiel/react-qr-scanner";
+import type { ScanResultState } from "../types/index";
+import type { EventItem } from "../types/event";
+import type { IDetectedBarcode } from "@yudiel/react-qr-scanner";
 
 export function useQrScanner() {
     // スキャン結果データ(成功・獲得済み情報など)
     const [scanResult, setScanResult] = useState<ScanResultState | null>(null);
+
+    const [scannedEvent, setScannedEvent] = useState<EventItem | null>(null);
     // エラーメッセージ(無効なQRコードなど)
     const [error, setError] = useState<string | null>(null);
 
@@ -38,6 +41,12 @@ export function useQrScanner() {
                 spotId: validation.spotId,
                 ...result
             });
+
+            // 全イベントから該当するイベント情報を取得
+            const allEvents = await stampService.getAllEvents();
+            const found = allEvents.find(e => e.id === validation.spotId);
+            setScannedEvent(found || null);
+
             setError(null); // エラー状態をクリア
         }
     };
@@ -47,8 +56,9 @@ export function useQrScanner() {
      */
     const clearResult = () => {
         setScanResult(null);
+        setScannedEvent(null);
         setError(null);
     };
 
-    return { scanResult, error, handleScan, clearResult};
+    return { scanResult, scannedEvent, error, handleScan, clearResult};
 }

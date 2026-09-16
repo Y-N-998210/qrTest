@@ -2,7 +2,7 @@
  * @file スタンプデータの検証・保存・取得を担当するサービス層(ビジネスロック)
  */
 import type {  StampValidationResult,  StampSaveResult } from "../types";
-import type { IEventRepository } from "../types/event";
+import type { EventItem, IEventRepository } from "../types/event";
 import { LocalStorageEventRepository } from "./LocalStorageEventRepository";
 
 // デフォルトのリポジトリインスタンス(必要に応じて差し替え可能)
@@ -68,5 +68,9 @@ export const stampService = {
      */
     async getSavedStamps(): Promise<string[]> {
         return await repository.getUnlockedEventIds();
+    },
+
+    async getAllEvents(): Promise<EventItem[]> {
+        return await repository.getAllEvents();
     }
 };
