@@ -16,7 +16,7 @@ export function useQrScanner() {
      * カメラがQRコードを検知した際に発火するハンドラー関数
      * @param detectedCode - カメラライブラリから渡される検出コード情報配列
      */
-    const handleScan = (detectedCodes: IDetectedBarcode[]) => {
+    const handleScan = async (detectedCodes: IDetectedBarcode[]) => {
         // 検出データがない場合は処理しない
         if (!detectedCodes || detectedCodes.length === 0) return;
 
@@ -33,7 +33,7 @@ export function useQrScanner() {
 
         // 2.正しいQRコードであればローカルストレージへ保存処理
         if (validation.spotId) {
-            const result = stampService.saveStamp(validation.spotId);
+            const result = await stampService.saveStamp(validation.spotId);
             setScanResult({
                 spotId: validation.spotId,
                 ...result

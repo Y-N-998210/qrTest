@@ -2,11 +2,20 @@
  * @file スタンプデータの検証・保存・取得を担当するサービス層(ビジネスロック)
  */
 import type {  StampValidationResult,  StampSaveResult } from "../types";
+import { IEventRepository } from "../types/event";
+import { LocalStorageEventRepository } from "./LocalStorageEventRepository";
 
-// ブラウザの localStorage に保存する際のキー名
-const STORAGE_KEY = 'festival_stamps';
+// デフォルトのリポジトリインスタンス(必要に応じて差し替え可能)
+let repository: IEventRepository = new LocalStorageEventRepository();
 
 export const stampService = {
+    /**
+     * リポジトリの切り替え(DB/LocalStorageの動的変更用)
+     */
+    setRepository(newRepo: IEventRepository) {
+        repository = newRepo;
+    },
+
     /**
      * 読み取ったQRコード文字列が学園祭用の正当なデータか判断する
      * @param rawData - QRコードから読み取った生のテキスト
@@ -31,24 +40,21 @@ export const stampService = {
     },
 
     /**
-     * 獲得したスタンプIDを localStorage に保存する
+     * 獲得したスタンプIDを図鑑に保存する(非同期処理化)
      * @param spotId - 保存対象のスポットID
      */
-    saveStamp(spotId: string): StampSaveResult {
-        const savedStamps = this.getSavedStamps();
+    async saveStamp(spotId: string): Promise<StampSaveResult> {
+        const isUnlocked = await repository.unlockEvent(spotId);
+        const updated = await repository.getUnlockedEventIds();
 
         // 重複チェック: すでに獲得済みの場合は保存せずに終了
-        if (savedStamps.includes(spotId)) {
+        if (!isUnlocked) {
             return {
                 success: false,
                 isAlreadyVisited: true,
                 message: 'このスタンプは既に獲得済みです'
             };
         }
-
-        // 未獲得の場合は配列に追加して localStorage に書き込み
-        const updated = [...savedStamps, spotId];
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
 
         return {
             success: true,
@@ -60,9 +66,7 @@ export const stampService = {
     /**
      * localStorage から過去に獲得したスタンプIDのリストを取得する
      */
-    getSavedStamps(): string[] {
-        const data = localStorage.getItem(STORAGE_KEY);
-        // データが存在すればJSON解析して返し、なければ空配列を返す
-        return data ? JSON.parse(data) : [];
+    async getSavedStamps(): Promise<string[]> {
+        return await repository.getUnlockedEventIds();
     }
 };
