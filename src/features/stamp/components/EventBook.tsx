@@ -1,5 +1,5 @@
 import React from 'react';
-import { EventItem } from '../types/event';
+import type { EventItem } from '../types/event';
 
 interface EventBookProps {
     allEvents: EventItem[];

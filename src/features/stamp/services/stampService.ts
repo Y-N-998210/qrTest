@@ -2,7 +2,7 @@
  * @file スタンプデータの検証・保存・取得を担当するサービス層(ビジネスロック)
  */
 import type {  StampValidationResult,  StampSaveResult } from "../types";
-import { IEventRepository } from "../types/event";
+import type { IEventRepository } from "../types/event";
 import { LocalStorageEventRepository } from "./LocalStorageEventRepository";
 
 // デフォルトのリポジトリインスタンス(必要に応じて差し替え可能)

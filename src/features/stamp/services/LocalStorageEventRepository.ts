@@ -1,6 +1,6 @@
-import { EventItem, IEventRepository } from '../types/event';
+import type { EventItem, IEventRepository } from '../types/event';
 
-const STORAGE_KEY = 'teisai2026_unlocked_events';
+const STORAGE_KEY = 'mikadosai2026_unlocked_events';
 
 export class LocalStorageEventRepository implements IEventRepository {
     async getUnlockedEventIds(): Promise<string[]> {
