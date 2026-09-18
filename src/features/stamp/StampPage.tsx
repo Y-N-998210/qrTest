@@ -88,7 +88,11 @@ export default function StampPage() {
 
                 {/* 図鑑画面 */}
                 {activeTab === 'book' && (
-                    <EventBook allEvents={allEvents} unlockedIds={unlockedIds} />
+                    <EventBook 
+                        allEvents={allEvents} 
+                        unlockedIds={unlockedIds}
+                        onReset={loadEventData}
+                    />
                 )}
             </main>
 

@@ -15,4 +15,6 @@ export interface IEventRepository {
     getUnlockedEventIds(): Promise<string[]>;
     unlockEvent(eventId: string): Promise<boolean>; // 新規獲得ならtrue
     getAllEvents(): Promise<EventItem[]>;
+    resetEvents(): Promise<void>;   // 全リセット用
+    removeEvent?(eventId: string): Promise<void>;   // 個別削除用
 }

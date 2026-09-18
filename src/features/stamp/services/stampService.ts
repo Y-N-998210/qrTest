@@ -72,5 +72,15 @@ export const stampService = {
 
     async getAllEvents(): Promise<EventItem[]> {
         return await repository.getAllEvents();
+    },
+
+    async resetStamps(): Promise<void> {
+        await repository.resetEvents();
+    },
+
+    async removeStamp(spotId: string): Promise<void> {
+        if (repository.removeEvent) {
+            await repository.removeEvent(spotId);
+        }
     }
 };

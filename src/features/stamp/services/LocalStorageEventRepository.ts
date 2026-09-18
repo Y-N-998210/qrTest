@@ -28,6 +28,16 @@ export class LocalStorageEventRepository implements IEventRepository {
         // 固定定義(プログラムのコード内に直接書かれているデータ)を返す。
         return MASTER_EVENTS;
     }
+
+    async resetEvents(): Promise<void> {
+        localStorage.removeItem(STORAGE_KEY);
+    }
+
+    async removeEvent(eventId: string): Promise<void> {
+        const current = await this.getUnlockedEventIds();
+        const updated = current.filter(id => id !== eventId);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    }
 }
 
 // イベントマスターデータの例
