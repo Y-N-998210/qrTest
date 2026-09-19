@@ -4,9 +4,13 @@
 import type {  StampValidationResult,  StampSaveResult } from "../types";
 import type { EventItem, IEventRepository } from "../types/event";
 import { LocalStorageEventRepository } from "./LocalStorageEventRepository";
+// import { ApiEventRepository } from "./ApiEventRepository";
 
 // デフォルトのリポジトリインスタンス(必要に応じて差し替え可能)
 let repository: IEventRepository = new LocalStorageEventRepository();
+
+// DB/APIへ変更時はコメントは外す
+// let repository: IEventRepository = new ApiEventRepository('/api');
 
 export const stampService = {
     /**
