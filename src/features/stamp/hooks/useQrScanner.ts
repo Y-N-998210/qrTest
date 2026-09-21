@@ -1,11 +1,11 @@
 /**
  * @file QRスキャンの動作状態(成功・失敗・エラー) を管理するカスタムフック
  */
-import { useState } from "react";
-import { stampService } from "../services/stampService"; // スタンプ獲得、イベント情報処理を行うビジネスロジックサービス
-import type { ScanResultState } from "../types/index";
-import type { EventItem } from "../types/event";
-import type { IDetectedBarcode } from "@yudiel/react-qr-scanner";
+import { useState } from 'react';
+import { stampService } from '../services/stampService'; // スタンプ獲得、イベント情報処理を行うビジネスロジックサービス
+import type { ScanResultState } from '../types/index';
+import type { EventItem } from '../types/event';
+import type { IDetectedBarcode } from '@yudiel/react-qr-scanner';
 
 export function useQrScanner() {
     // スキャン結果データ(成功・獲得済み情報など)
@@ -39,12 +39,12 @@ export function useQrScanner() {
             const result = await stampService.saveStamp(validation.spotId);
             setScanResult({
                 spotId: validation.spotId,
-                ...result
+                ...result,
             });
 
             // 全イベントから該当するイベント情報を取得
             const allEvents = await stampService.getAllEvents();
-            const found = allEvents.find(e => e.id === validation.spotId);
+            const found = allEvents.find((e) => e.id === validation.spotId);
             setScannedEvent(found || null);
 
             setError(null); // エラー状態をクリア
@@ -60,5 +60,5 @@ export function useQrScanner() {
         setError(null);
     };
 
-    return { scanResult, scannedEvent, error, handleScan, clearResult};
+    return { scanResult, scannedEvent, error, handleScan, clearResult };
 }

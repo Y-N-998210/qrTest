@@ -1,7 +1,7 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import './index.css';
+import App from './App.tsx';
 
 // 元々
 // createRoot(document.getElementById('root')!).render(
@@ -20,10 +20,10 @@ async function enableMocking() {
   // }
 
   // Vercelに上げるときはこっち使う
-  const { worker } = await import('./mocks/browser')
+  const { worker } = await import('./mocks/browser');
   return worker.start({
     onUnhandledRequest: 'bypass',
-  })
+  });
 }
 
 // MSWの準備（または本番環境でのスキップ）が完了してからアプリをレンダリング
@@ -32,5 +32,5 @@ enableMocking().then(() => {
     <StrictMode>
       <App />
     </StrictMode>,
-  )
-})
+  );
+});

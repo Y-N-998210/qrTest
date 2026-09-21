@@ -28,9 +28,7 @@ export default function App() {
   return (
     <div className="app-container">
       {/* 1. お楽しみ企画（Joy） TOPページ */}
-      {currentPage === 'joy-top' && (
-        <JoyTopPage onNavigate={handleNavigate} />
-      )}
+      {currentPage === 'joy-top' && <JoyTopPage onNavigate={handleNavigate} />}
 
       {/* 2. イベント QR リーダー & 図鑑ページ */}
       {currentPage === 'scan' && (

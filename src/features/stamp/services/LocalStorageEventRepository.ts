@@ -19,7 +19,7 @@ export class LocalStorageEventRepository implements IEventRepository {
     }
 
     /**
-     * 
+     *
      * @todo // ※ DB連携に切り替える際は、ApiEventRepository.ts を作成し、fetch('/api/events') などで書き換える
      */
 
@@ -35,15 +35,26 @@ export class LocalStorageEventRepository implements IEventRepository {
 
     async removeEvent(eventId: string): Promise<void> {
         const current = await this.getUnlockedEventIds();
-        const updated = current.filter(id => id !== eventId);
+        const updated = current.filter((id) => id !== eventId);
         localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
     }
 }
 
 // イベントマスターデータの例
 export const MASTER_EVENTS: EventItem[] = [
-    { id: 'spot-01', title: 'メインステージ', description: 'オープニングイベントが開催される場所です。' },
-    { id: 'spot-02', title: '情報処理研究会 展示室', description: '部員が作成したゲーム体験コーナー。' },
-    { id: 'spot-03', title: '模擬店エリア', description: '美味しい焼きそばやドリンクが楽しめます。' },
+    {
+        id: 'spot-01',
+        title: 'メインステージ',
+        description: 'オープニングイベントが開催される場所です。',
+    },
+    {
+        id: 'spot-02',
+        title: '情報処理研究会 展示室',
+        description: '部員が作成したゲーム体験コーナー。',
+    },
+    {
+        id: 'spot-03',
+        title: '模擬店エリア',
+        description: '美味しい焼きそばやドリンクが楽しめます。',
+    },
 ];
-

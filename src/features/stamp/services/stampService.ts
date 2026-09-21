@@ -1,10 +1,10 @@
 /**
  * @file スタンプデータの検証・保存・取得を担当するサービス層(ビジネスロック)
  */
-import type {  StampValidationResult,  StampSaveResult } from "../types";
-import type { EventItem, IEventRepository } from "../types/event";
+import type { StampValidationResult, StampSaveResult } from '../types';
+import type { EventItem, IEventRepository } from '../types/event';
 // import { LocalStorageEventRepository } from "./LocalStorageEventRepository";
-import { ApiEventRepository } from "./ApiEventRepository";
+import { ApiEventRepository } from './ApiEventRepository';
 
 // デフォルトのリポジトリインスタンス(必要に応じて差し替え可能)
 // let repository: IEventRepository = new LocalStorageEventRepository();
@@ -31,7 +31,7 @@ export const stampService = {
         if (!rawData || !rawData.startsWith('festival-stamp:')) {
             return {
                 isValid: false,
-                message: '学園祭用QRコードではありません'
+                message: '学園祭用QRコードではありません',
             };
         }
 
@@ -39,7 +39,7 @@ export const stampService = {
         const spotId = rawData.replace('festival-stamp:', '');
         return {
             isValid: true,
-            spotId
+            spotId,
         };
     },
 
@@ -56,14 +56,14 @@ export const stampService = {
             return {
                 success: false,
                 isAlreadyVisited: true,
-                message: 'このスタンプは既に獲得済みです'
+                message: 'このスタンプは既に獲得済みです',
             };
         }
 
         return {
             success: true,
             isAlreadyVisited: false,
-            updatedStamps: updated
+            updatedStamps: updated,
         };
     },
 
@@ -86,5 +86,5 @@ export const stampService = {
         if (repository.removeEvent) {
             await repository.removeEvent(spotId);
         }
-    }
+    },
 };

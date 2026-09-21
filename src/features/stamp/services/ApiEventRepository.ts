@@ -1,9 +1,9 @@
 import type { EventItem, IEventRepository } from '../types/event';
 
-    /**
-     * 
-     * @todo // 環境変数（import.meta.env.VITE_USE_API など）を使って、自動で LocalStorage と ApiEventRepository を切り替える設計にする
-     */
+/**
+ *
+ * @todo // 環境変数（import.meta.env.VITE_USE_API など）を使って、自動で LocalStorage と ApiEventRepository を切り替える設計にする
+ */
 
 export class ApiEventRepository implements IEventRepository {
     private baseUrl: string;
@@ -19,11 +19,16 @@ export class ApiEventRepository implements IEventRepository {
         try {
             const response = await fetch(`${this.baseUrl}/events/unlocked`);
             if (!response.ok) {
-                throw new Error(`Failed to fetch unlocked events: ${response.statusText}`);
+                throw new Error(
+                    `Failed to fetch unlocked events: ${response.statusText}`,
+                );
             }
             return await response.json();
         } catch (error) {
-            console.error('ApiEventRepository.getUnlockedEventIds Error:', error);
+            console.error(
+                'ApiEventRepository.getUnlockedEventIds Error:',
+                error,
+            );
             return [];
         }
     }
@@ -42,7 +47,9 @@ export class ApiEventRepository implements IEventRepository {
             });
 
             if (!response.ok) {
-                throw new Error(`Failed to unlock event: ${response.statusText}`);
+                throw new Error(
+                    `Failed to unlock event: ${response.statusText}`,
+                );
             }
 
             const data = await response.json();
@@ -61,7 +68,9 @@ export class ApiEventRepository implements IEventRepository {
         try {
             const response = await fetch(`${this.baseUrl}/events`);
             if (!response.ok) {
-                throw new Error(`Failed to fetch all events: ${response.statusText}`);
+                throw new Error(
+                    `Failed to fetch all events: ${response.statusText}`,
+                );
             }
             return await response.json();
         } catch (error) {
