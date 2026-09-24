@@ -7,9 +7,10 @@
 ## 🛠 技術スタック
 
 - **Frontend**: React, TypeScript, Vite, Tailwind CSS
+- **QR Reader**: `@yudiel/react-qr-scanner`
 - **Mock Service**: MSW (Mock Service Worker)
 - **State/Architecture**: Repository Pattern (`IEventRepository`)
-- **Database (Future)**: SQLite (バックエンドAPI経由で接続予定)
+- **Database (予定)**: SQLite (バックエンドAPI経由で接続予定)
 
 ---
 
@@ -17,18 +18,18 @@
 
 ```text
 src/
-├── features/
-│   ├── joy/             # お楽しみ企画TOPページ関連コンポーネント (`JoyTopPage.tsx`)
-│   └── stamp/           # QRスキャナー・イベント図鑑関連コンポーネント (`StampPage.tsx`)
-├── data/
-│   └── events.ts        # イベントマスタデータ (フロントエンド内保持)
-├── repositories/        # データ層抽象化 (Repositoryパターン)
-│   ├── IEventRepository.ts       # インターフェース定義
-│   ├── ApiEventRepository.ts     # 本番API/SQLite接続用リポジトリ
-│   └── LocalStorageEventRepository.ts # ローカル検証用リポジトリ
-├── services/
-│   └── stampService.ts  # スタンプビジネスロジック
-└── App.tsx              # 画面ルーティング・エントリーポイント
+├── assets/             # 画像・アイコン等の静的リソース
+├── features/           # 機能単位のコンポーネント管理
+│   ├── joy/            # お楽しみ企画TOPページ関連コンポーネント
+│   └── stamp/          # QRスタンプラリー機能
+│       ├── components/ # スタンプ画面・カメラ・モーダル等のUI component
+│       ├── hooks/      # カメラ起動・スキャン処理用カスタムフック
+│       ├── services/   # スタンプビジネスロジック (stampService.ts等)
+│       └── types/      # 型定義
+├── mocks/              # MSW用モックAPI定義
+├── public/             # 静的公開ファイル
+├── App.tsx             # エントリーポイント / ルーティング
+└── main.tsx            # アプリケーション起動
 ```
 
 ---
@@ -50,9 +51,9 @@ npm run build
 
 ## 🔌 バックエンド（SQLite API）連携仕様
 
-本アプリケーションは、軽量化および画面表示速度向上のため「イベントマスタデータはフロントエンド内（src/data/events.ts）に保持し、DB（SQLite）側ではユーザーごとのスタンプ獲得記録のみを管理する」アーキテクチャを採用。
+本アプリケーションは、軽量化および画面表示速度向上のため「イベントマスタデータはフロントエンド内（src/data/events.ts）に保持し、DB（SQLite）側ではユーザーごとのスタンプ獲得記録のみを管理する」構成を採用。
 
-バックエンドAPIは以下のエンドポイントを実装することで、フロントエンドと接続可能です。
+バックエンドAPIは以下のエンドポイントを実装することで、フロントエンドと接続可能。
 
 ### リクエスト共通仕様
 
@@ -106,6 +107,7 @@ user_stamps テーブル
 
 ## 🚢 学園祭メインHPへの統合手順
 1.`src/feactures/joy`及び`src/features/stamp`ディレクトリを統合先プロジェクトへコピーする
-2.統合先プロジェクトのルーター（react-router-dom 等）にて、以下のパスを割り当てます：
+2.統合先プロジェクトのルーター（react-router-dom 等）にて、以下のパスを割り当てる：
 - `/joy` ➔ `<JoyTopPage />`
 - `/joy/scan` ➔ `<StampPage />`
+
