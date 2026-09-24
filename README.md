@@ -61,7 +61,7 @@ npm run build
 
 - x-user-id: クライアント識別用UUID（例: 550e8400-e29b-41d4-a716-446655440000）
 
-## DBテーブル設計案（SQLite）
+### DBテーブル設計案（SQLite）
 
 user_stamps テーブル
 | カラム名 | 型 | 説明 |
@@ -70,7 +70,7 @@ user_stamps テーブル
 | `event_id` | TEXT | 獲得したイベントID (例: `spot-01` ) (複合主キー) |
 | `unlocked_at` | TEXT | 獲得日時 (ISO8601形式など) |
 
-## 必須APIエンドポイント一覧
+### 必須APIエンドポイント一覧
 1. 獲得済みスタンプ一覧の取得
    - URL:`GET /api/events/unlocked`
    - Header:`x-user-id: <UUID>`
@@ -106,7 +106,7 @@ user_stamps テーブル
 ---
 
 ## 🚢 学園祭メインHPへの統合手順
-1.`src/feactures/joy`及び`src/features/stamp`ディレクトリを統合先プロジェクトへコピーする
+1.`src/features/joy`及び`src/features/stamp`ディレクトリを統合先プロジェクトへコピーする
 2.統合先プロジェクトのルーター（react-router-dom 等）にて、以下のパスを割り当てる：
 - `/joy` ➔ `<JoyTopPage />`
 - `/joy/scan` ➔ `<StampPage />`
