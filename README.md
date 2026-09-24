@@ -104,6 +104,39 @@ PRIMARY KEY (user_id, event_id)
 );
 ```
 
+### 必須APIエンドポイント一覧
+1. 獲得済みスタンプ一覧の取得
+   - URL:`GET /api/events/unlocked`
+   - Header:`x-user-id: <UUID>`
+   - Response:`JSON Array`
+     ```
+     ["spot-01", "spot-03"]
+     ```
+2. スタンプの新規獲得（記録）
+   - URL:`POST /api/events/unlock`
+   - Header:`x-user-id: <UUID>`
+   - Body:
+     ```
+     { "eventId": "spot-02" }
+     ```
+   - Response:
+     ```
+     { "success": true, "isNew": true }
+     ```
+3. 全体達成率の取得
+   - URL:`GET /api/stats/total-points`
+   - Response:
+     ```
+     { "totalPoints": 152 }
+     ```
+4. 獲得スタンプのリセット（デバッグ用）
+   - URL:`DELETE /api/events/unlocked`
+   - Header:`x-user-id: <UUID>`
+   - Response:
+     ```
+     { "success": true }
+
+
 ## 🔗 今後の本番Webサイトへの統合手順
 本アプリケーションは、将来的に学園祭公式Webサイト（メインHP）へモジュールとして組み込むことを想定して設計されています。
 
