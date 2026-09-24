@@ -78,6 +78,7 @@ npm run build
 バックエンド開発完了時には、リポジトリパターンを採用しているため フロントエンドの画面コードを書き換えることなく本番DB環境へ移行可能です。
 
 ### データフロー
+```text
 [ React (JoyTopPage / StampPage) ]
                │
                ▼
@@ -90,6 +91,7 @@ npm run build
                │ SQLite Driver
                ▼
      [ SQLite (db.sqlite) ]
+```
 
 ### 想定されるSQLiteテーブル構成
 ```sql
