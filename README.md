@@ -1,125 +1,113 @@
-# 帝祭 2026 お楽しみ企画【Joy】& スタンプラリー Web App
+# 帝祭2026 お楽しみ企画【Joy】 & イベント図鑑 (QR Stamp Rally)
 
-学園祭（帝祭2026）の特設Webサイトに組み込む、お楽しみ企画ポータルおよびQRスタンプラリーのフロントエンドアプリケーション。
-
----
-
-## 🛠 技術スタック
-
-- **Frontend**: React, TypeScript, Vite, Tailwind CSS
-- **QR Reader**: `@yudiel/react-qr-scanner`
-- **Mock Service**: MSW (Mock Service Worker)
-- **State/Architecture**: Repository Pattern (`IEventRepository`)
-- **Database (予定)**: SQLite (バックエンドAPI経由で接続予定)
+帝京大学の学園祭（帝祭2026）向けに開発された、モジュール型「お楽しみ企画（Joy）」ポータルおよびQRコードスタンプラリー機能のフロントエンドアプリケーションです。
+本番の学園祭公式Webサイトへの統合およびバックエンド（SQLite）連携を見越したアーキテクチャで設計されています。
 
 ---
 
-## 📁 ディレクトリ構造
+## 📑 主な機能
+
+### 1. お楽しみ企画 TOP (`JoyTopPage.tsx`)
+* **全体/自己貢献度ダッシュボード**: 参加者の合計ポイントメーターおよび個人の貢献度表示
+* **動的キャラクター（うってぃ）**: 貢献度に応じた表情・台詞の変化
+* **知識ランクシステム**: ポイント獲得に応じたランクアップ（学生 ➔ 優秀な学生 ➔ 先生 ➔ 教授 ➔ 妖精）
+* **モーダルダイアログ**: 「ヒント（使い方）」および「ストーリー（うってぃを救え！）」の初回自動表示/手動表示
+* **企画ショートカットナビゲーション**:
+  * 📷 **イベント QR リーダー**（`StampPage` へ遷移）
+  * 🗺️ 学校探検！！ / 🗳️ イベント人気投票！ / 🖼️ 思い出投稿 / 📅 マイスケジュール / 🎰 ビンゴ番号表示
+
+### 2. QRスキャン & イベント図鑑 (`StampPage.tsx`)
+* **リアルタイムQRスキャン**: `@yudiel/react-qr-scanner` を使用したカメラ読み取り
+* **スタンプ判別ロジック**: `festival-stamp:{spotId}` 形式のQRコードを認識してスタンプ獲得
+* **イベント図鑑**: 獲得済みスタンプの一覧・未獲得企画のマスク表示
+* **デバッグ機能**: ローカル検証用の獲得状態リセット・ダミー解放機能
+
+---
+
+## 🛠️ 技術スタック
+
+* **Frontend**: React 18 / TypeScript / Vite / Tailwind CSS
+* **QR Reader**: `@yudiel/react-qr-scanner`
+* **Mocking / API**: MSW (Mock Service Worker)
+* **Architecture**: Repository Pattern (`IEventRepository`)
+* **Database (Future Integration)**: SQLite
+
+---
+
+## 🏗️ ディレクトリ構造
 
 ```text
 src/
-├── assets/             # 画像・アイコン等の静的リソース
-├── features/           # 機能単位のコンポーネント管理
-│   ├── joy/            # お楽しみ企画TOPページ関連コンポーネント
-│   └── stamp/          # QRスタンプラリー機能
-│       ├── components/ # スタンプ画面・カメラ・モーダル等のUI component
-│       ├── hooks/      # カメラ起動・スキャン処理用カスタムフック
-│       ├── services/   # スタンプビジネスロジック (stampService.ts等)
-│       └── types/      # 型定義
-├── mocks/              # MSW用モックAPI定義
-├── public/             # 静的公開ファイル
-├── App.tsx             # エントリーポイント / ルーティング
-└── main.tsx            # アプリケーション起動
+├── features/
+│   ├── joy/
+│   │   └── JoyTopPage.tsx          # お楽しみ企画 TOP コンポーネント
+│   └── stamp/
+│       ├── StampPage.tsx           # QRスキャン & 図鑑画面
+│       ├── services/
+│       │   ├── IEventRepository.ts # データアクセス抽象化インターフェース
+│       │   ├── ApiEventRepository.ts # Web API連携用リポジトリ
+│       │   └── LocalStorageEventRepository.ts # ローカル検証用リポジトリ
+│       └── types/
+│           └── event.ts            # イベント・スタンプ型定義
+├── mocks/
+│   ├── handlers.ts                 # MSW モックAPIハンドラー
+│   └── browser.ts                  # MSW ブラウザワーカー設定
+├── App.tsx                         # 状態ベースの画面遷移（joy-top / scan）
+└── main.tsx                        # アプリケーションエントリーポイント (MSW起動)
 ```
 
----
+## 🚀 開発環境のセットアップ
 
-## 🏗 アーキテクチャ & データ保存方針
-
-リポジトリパターン (IEventRepository) を採用。データ保存先の具体実装を隠蔽・分離して、環境や開発フェーズに応じた柔軟な切り替え行う。
-
-### リポジトリ実装の種類と役割
-1. ApiEventRepository (本番・連携用)(今はこっち使ってる)
-   - バックエンドの SQLite API と通信してスタンプ獲得状況を永続化。
-2. LocalStorageEventRepository (開発・テスト・保険用)
-   - ブラウザの LocalStorage を利用して単体動作。
-   - バックエンド未完成時のフロント独立開発、オフライン環境でのテスト、および学園祭当日の通信障害時の代替え処理用として保持・活用
----
-
-## 🚀 開発サーバーの起動
-
-```
-# パッケージのインストール
+インストール
+```bash
 npm install
+```
 
-# 開発サーバー起動 (MSWによるモックAPI有効)
+開発サーバー起動
+```bash
 npm run dev
+```
 
-# ビルド & 型チェック
+ビルド&型チェック
+```bash
 npm run build
 ```
 
----
+## 🛢️ データベース・バックエンド（SQLite）との連携計画
+現在は開発・検証用に MSW (Mock Service Worker) による擬似API通信を行っています。
+バックエンド開発完了時には、リポジトリパターンを採用しているため フロントエンドの画面コードを書き換えることなく本番DB環境へ移行可能です。
 
-## 🔌 バックエンド（SQLite API）連携仕様
+### データフロー
+[ React (JoyTopPage / StampPage) ]
+               │
+               ▼
+   [ ApiEventRepository.ts ]
+               │
+               │ HTTP (fetch)
+               ▼
+[ バックエンド API (Node.js / Python / C++ 等) ]
+               │
+               │ SQLite Driver
+               ▼
+     [ SQLite (db.sqlite) ]
 
-本アプリケーションは、軽量化および画面表示速度向上のため「イベントマスタデータはフロントエンド内（src/data/events.ts）に保持し、DB（SQLite）側ではユーザーごとのスタンプ獲得記録のみを管理する」構成を採用。
+### 想定されるSQLiteテーブル構成
+```sql
+-- ユーザー獲得スタンプ記録
+CREATE TABLE user_stamps (
+user_id TEXT NOT NULL,
+event_id TEXT NOT NULL,
+unlocked_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY (user_id, event_id)
+);
+```
 
-バックエンドAPIは以下のエンドポイントを実装することで、フロントエンドと接続可能。
+## 🔗 今後の本番Webサイトへの統合手順
+本アプリケーションは、将来的に学園祭公式Webサイト（メインHP）へモジュールとして組み込むことを想定して設計されています。
 
-### リクエスト共通仕様
-
-通信時、フロントエンドから以下のカスタムヘッダーが付与される。
-
-- x-user-id: クライアント識別用UUID（例: 550e8400-e29b-41d4-a716-446655440000）
-
-### DBテーブル設計案（SQLite）
-
-user_stamps テーブル
-| カラム名 | 型 | 説明 |
-| :--- | :--- | :--- |
-| `user_id` | TEXT | ユーザー識別用UUID (複合主キー) |
-| `event_id` | TEXT | 獲得したイベントID (例: `spot-01` ) (複合主キー) |
-| `unlocked_at` | TEXT | 獲得日時 (ISO8601形式など) |
-
-### 必須APIエンドポイント一覧
-1. 獲得済みスタンプ一覧の取得
-   - URL:`GET /api/events/unlocked`
-   - Header:`x-user-id: <UUID>`
-   - Response:`JSON Array`
-     ```
-     ["spot-01", "spot-03"]
-     ```
-2. スタンプの新規獲得（記録）
-   - URL:`POST /api/events/unlock`
-   - Header:`x-user-id: <UUID>`
-   - Body:
-     ```
-     { "eventId": "spot-02" }
-     ```
-   - Response:
-     ```
-     { "success": true, "isNew": true }
-     ```
-3. 全体達成率の取得
-   - URL:`GET /api/stats/total-points`
-   - Response:
-     ```
-     { "totalPoints": 152 }
-     ```
-4. 獲得スタンプのリセット（デバッグ用）
-   - URL:`DELETE /api/events/unlocked`
-   - Header:`x-user-id: <UUID>`
-   - Response:
-     ```
-     { "success": true }
-     ```
-
----
-
-## 🚢 学園祭メインHPへの統合手順
-1.`src/features/joy`及び`src/features/stamp`ディレクトリを統合先プロジェクトへコピーする
-2.統合先プロジェクトのルーター（react-router-dom 等）にて、以下のパスを割り当てる：
-- `/joy` ➔ `<JoyTopPage />`
-- `/joy/scan` ➔ `<StampPage />`
-
+1. 画面コンポーネントの提供:
+   - src/features/joy および src/features/stamp ディレクトリを公式Webサイトのリポジトリへ移植します。
+2. ルーティングの接続:
+   - 現在 App.tsx 内で管理している State ベースの遷移（joy-top / scan）を、公式Webサイト側のルーター（React Router 等）のルーティング定義（/joy, /joy/scan など）へ置き換えます。
+3. API接続先の変更:
+  - ApiEventRepository.ts の baseUrl に本番APIサーバーのURLを設定し、main.tsx の MSW 起動処理を無効化（または本番ビルドから除外）することで本番DBへの接続へ切り替えます。
