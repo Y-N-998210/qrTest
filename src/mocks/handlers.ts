@@ -1,7 +1,7 @@
 import { http, HttpResponse } from 'msw';
 import type { EventItem } from '../features/stamp/types/event';
 
-// テスト用データ
+// テスト用データ（企画を3つ追加して計5件に変更）
 const mockEvents: EventItem[] = [
     {
         id: 'spot-01',
@@ -19,10 +19,34 @@ const mockEvents: EventItem[] = [
         description: '部員が制作したC++やPythonのゲームが遊べます。',
         category: '展示',
     },
+    {
+        id: 'spot-03',
+        title: '本格手打ちそば屋台',
+        organization: 'そば打ち同好会',
+        schedule: '11:00 - 15:00',
+        description: '毎朝手打ちしているこだわりのおいしいお蕎麦です！',
+        category: '模擬店',
+    },
+    {
+        id: 'spot-04',
+        title: 'ロボットコンテスト実演展示',
+        organization: 'ロボティクス部',
+        schedule: '10:30 - 16:00',
+        description: '大会出場ロボットの自律走行と障害物回避デモを行います。',
+        category: '展示',
+    },
+    {
+        id: 'spot-05',
+        title: '軽音部スペシャルライブ',
+        organization: '軽音楽部',
+        schedule: '13:00 - 16:00',
+        description:
+            '野外ステージで人気のバンド曲を熱唱！熱いライブをお届けします。',
+        category: 'ステージ',
+    },
 ];
 
 // メモリ上で user_id ごとの解放済みIDを保持
-// 構造: { [userId: string]: string[] }
 const userUnlockedMap: Record<string, string[]> = {};
 
 // ヘッダーから user_id を取得するヘルパー関数
@@ -61,7 +85,7 @@ export const handlers = [
         return HttpResponse.json({ success: true, isNew });
     }),
 
-    // 全ユーザーの獲得 pt 累計 (GET /api/stats/total-points 仕様対応)
+    // 全ユーザーの獲得 pt 累計
     http.get('/api/stats/total-points', () => {
         const totalPoints = Object.values(userUnlockedMap).reduce(
             (acc, ids) => acc + ids.length,
