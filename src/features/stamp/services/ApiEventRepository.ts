@@ -1,4 +1,5 @@
 import type { EventItem, IEventRepository } from '../types/event';
+import { getOrCreateUserId } from '../../../utils/userId';
 
 /**
  *
@@ -13,11 +14,24 @@ export class ApiEventRepository implements IEventRepository {
     }
 
     /**
+     * 共通リクエストヘッダーを取得 (x-user-id を自動付与)
+     */
+    private getHeaders(): HeadersInit {
+        return {
+            'Content-Type': 'application/json',
+            'x-user-id': getOrCreateUserId(),
+        };
+    }
+
+    /**
      * 獲得済みイベントID一覧を取得 (GET /api/events/unlocked)
      */
     async getUnlockedEventIds(): Promise<string[]> {
         try {
-            const response = await fetch(`${this.baseUrl}/events/unlocked`);
+            const response = await fetch(`${this.baseUrl}/events/unlocked`, {
+                method: 'GET',
+                headers: this.getHeaders(),
+            });
             if (!response.ok) {
                 throw new Error(
                     `Failed to fetch unlocked events: ${response.statusText}`,
@@ -40,9 +54,7 @@ export class ApiEventRepository implements IEventRepository {
         try {
             const response = await fetch(`${this.baseUrl}/events/unlock`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: this.getHeaders(),
                 body: JSON.stringify({ eventId }),
             });
 
@@ -66,7 +78,10 @@ export class ApiEventRepository implements IEventRepository {
      */
     async getAllEvents(): Promise<EventItem[]> {
         try {
-            const response = await fetch(`${this.baseUrl}/events`);
+            const response = await fetch(`${this.baseUrl}/events`, {
+                method: 'GET',
+                headers: this.getHeaders(),
+            });
             if (!response.ok) {
                 throw new Error(
                     `Failed to fetch all events: ${response.statusText}`,
@@ -86,6 +101,7 @@ export class ApiEventRepository implements IEventRepository {
         try {
             await fetch(`${this.baseUrl}/events/unlocked`, {
                 method: 'DELETE',
+                headers: this.getHeaders(),
             });
         } catch (error) {
             console.error('ApiEventRepository.resetEvents Error:', error);
@@ -99,6 +115,7 @@ export class ApiEventRepository implements IEventRepository {
         try {
             await fetch(`${this.baseUrl}/events/unlocked/${eventId}`, {
                 method: 'DELETE',
+                headers: this.getHeaders(),
             });
         } catch (error) {
             console.error('ApiEventRepository.removeEvent Error:', error);

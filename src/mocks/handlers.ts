@@ -21,8 +21,14 @@ const mockEvents: EventItem[] = [
     },
 ];
 
-// メモリ上で解放済みIDを保持（リセットや解放動作のテスト用）
-let unlockedIds: string[] = [];
+// メモリ上で user_id ごとの解放済みIDを保持
+// 構造: { [userId: string]: string[] }
+const userUnlockedMap: Record<string, string[]> = {};
+
+// ヘッダーから user_id を取得するヘルパー関数
+const getUserId = (request: Request): string => {
+    return request.headers.get('x-user-id') || 'anonymous-default-user';
+};
 
 // 通信ルール
 export const handlers = [
@@ -32,23 +38,55 @@ export const handlers = [
     }),
 
     // 獲得済みイベントID一覧取得
-    http.get('/api/events/unlocked', () => {
+    http.get('/api/events/unlocked', ({ request }) => {
+        const userId = getUserId(request);
+        const unlockedIds = userUnlockedMap[userId] || [];
         return HttpResponse.json(unlockedIds);
     }),
 
     // イベント新規解放
     http.post('/api/events/unlock', async ({ request }) => {
+        const userId = getUserId(request);
         const body = (await request.json()) as { eventId: string };
-        const isNew = !unlockedIds.includes(body.eventId);
-        if (isNew) {
-            unlockedIds.push(body.eventId);
+
+        if (!userUnlockedMap[userId]) {
+            userUnlockedMap[userId] = [];
         }
+
+        const isNew = !userUnlockedMap[userId].includes(body.eventId);
+        if (isNew) {
+            userUnlockedMap[userId].push(body.eventId);
+        }
+
         return HttpResponse.json({ success: true, isNew });
     }),
 
-    // 全リセット
-    http.delete('/api/events/unlocked', () => {
-        unlockedIds = [];
+    // 全ユーザーの獲得 pt 累計 (GET /api/stats/total-points 仕様対応)
+    http.get('/api/stats/total-points', () => {
+        const totalPoints = Object.values(userUnlockedMap).reduce(
+            (acc, ids) => acc + ids.length,
+            0,
+        );
+        return HttpResponse.json({ totalPoints });
+    }),
+
+    // 指定ユーザーのスタンプ全リセット
+    http.delete('/api/events/unlocked', ({ request }) => {
+        const userId = getUserId(request);
+        userUnlockedMap[userId] = [];
+        return new HttpResponse(null, { status: 204 });
+    }),
+
+    // 特定スタンプの削除
+    http.delete('/api/events/unlocked/:id', ({ request, params }) => {
+        const userId = getUserId(request);
+        const eventId = params.id as string;
+
+        if (userUnlockedMap[userId]) {
+            userUnlockedMap[userId] = userUnlockedMap[userId].filter(
+                (id) => id !== eventId,
+            );
+        }
         return new HttpResponse(null, { status: 204 });
     }),
 ];
