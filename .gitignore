@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# SQLite データベースと環境変数ファイルを Git 管理外にする
+server/*.sqlite
+server/*.sqlite-journal
+server/*.db
+server/.env
