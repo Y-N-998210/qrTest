@@ -1,75 +1,148 @@
-# React + TypeScript + Vite
+# 帝祭2026 お楽しみ企画【Joy】 & イベント図鑑 (QR Stamp Rally)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+帝京大学の学園祭（帝祭2026）向けに開発された、モジュール型「お楽しみ企画（Joy）」ポータルおよびQRコードスタンプラリー機能のフロントエンドアプリケーションです。
+本番の学園祭公式Webサイトへの統合およびバックエンド（SQLite）連携を見越したアーキテクチャで設計されています。
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 📑 主な機能
 
-## React Compiler
+### 1. お楽しみ企画 TOP (`JoyTopPage.tsx`)
+* **全体/自己貢献度ダッシュボード**: 参加者の合計ポイントメーターおよび個人の貢献度表示
+* **動的キャラクター（うってぃ）**: 貢献度に応じた表情・台詞の変化
+* **知識ランクシステム**: ポイント獲得に応じたランクアップ（学生 ➔ 優秀な学生 ➔ 先生 ➔ 教授 ➔ 妖精）
+* **モーダルダイアログ**: 「ヒント（使い方）」および「ストーリー（うってぃを救え！）」の初回自動表示/手動表示
+* **企画ショートカットナビゲーション**:
+  * 📷 **イベント QR リーダー**（`StampPage` へ遷移）
+  * 🗺️ 学校探検！！ / 🗳️ イベント人気投票！ / 🖼️ 思い出投稿 / 📅 マイスケジュール / 🎰 ビンゴ番号表示
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 2. QRスキャン & イベント図鑑 (`StampPage.tsx`)
+* **リアルタイムQRスキャン**: `@yudiel/react-qr-scanner` を使用したカメラ読み取り
+* **スタンプ判別ロジック**: `festival-stamp:{spotId}` 形式のQRコードを認識してスタンプ獲得
+* **イベント図鑑**: 獲得済みスタンプの一覧・未獲得企画のマスク表示
+* **デバッグ機能**: ローカル検証用の獲得状態リセット・ダミー解放機能
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🛠️ 技術スタック
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+* **Frontend**: React 18 / TypeScript / Vite / Tailwind CSS
+* **QR Reader**: `@yudiel/react-qr-scanner`
+* **Mocking / API**: MSW (Mock Service Worker)
+* **Architecture**: Repository Pattern (`IEventRepository`)
+* **Database (Future Integration)**: SQLite
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🏗️ ディレクトリ構造
 
+```text
+src/
+├── features/
+│   ├── joy/
+│   │   └── JoyTopPage.tsx          # お楽しみ企画 TOP コンポーネント
+│   └── stamp/
+│       ├── StampPage.tsx           # QRスキャン & 図鑑画面
+│       ├── services/
+│       │   ├── IEventRepository.ts # データアクセス抽象化インターフェース
+│       │   ├── ApiEventRepository.ts # Web API連携用リポジトリ
+│       │   └── LocalStorageEventRepository.ts # ローカル検証用リポジトリ
+│       └── types/
+│           └── event.ts            # イベント・スタンプ型定義
+├── mocks/
+│   ├── handlers.ts                 # MSW モックAPIハンドラー
+│   └── browser.ts                  # MSW ブラウザワーカー設定
+├── App.tsx                         # 状態ベースの画面遷移（joy-top / scan）
+└── main.tsx                        # アプリケーションエントリーポイント (MSW起動)
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+## 🚀 開発環境のセットアップ
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+インストール
+```bash
+npm install
 ```
+
+開発サーバー起動
+```bash
+npm run dev
+```
+
+ビルド&型チェック
+```bash
+npm run build
+```
+
+## 🛢️ データベース・バックエンド（SQLite）との連携計画
+現在は開発・検証用に MSW (Mock Service Worker) による擬似API通信を行っています。
+バックエンド開発完了時には、リポジトリパターンを採用しているため フロントエンドの画面コードを書き換えることなく本番DB環境へ移行可能です。
+
+### データフロー
+```text
+[ React (JoyTopPage / StampPage) ]
+               │
+               ▼
+   [ ApiEventRepository.ts ]
+               │
+               │ HTTP (fetch)
+               ▼
+[ バックエンド API (Node.js / Python / C++ 等) ]
+               │
+               │ SQLite Driver
+               ▼
+     [ SQLite (db.sqlite) ]
+```
+
+### 想定されるSQLiteテーブル構成
+```sql
+-- ユーザー獲得スタンプ記録
+CREATE TABLE user_stamps (
+user_id TEXT NOT NULL,
+event_id TEXT NOT NULL,
+unlocked_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY (user_id, event_id)
+);
+```
+
+### 必須APIエンドポイント一覧
+1. 獲得済みスタンプ一覧の取得
+   - URL:`GET /api/events/unlocked`
+   - Header:`x-user-id: <UUID>`
+   - Response:`JSON Array`
+     ```
+     ["spot-01", "spot-03"]
+     ```
+2. スタンプの新規獲得（記録）
+   - URL:`POST /api/events/unlock`
+   - Header:`x-user-id: <UUID>`
+   - Body:
+     ```
+     { "eventId": "spot-02" }
+     ```
+   - Response:
+     ```
+     { "success": true, "isNew": true }
+     ```
+3. 全体達成率の取得
+   - URL:`GET /api/stats/total-points`
+   - Response:
+     ```
+     { "totalPoints": 152 }
+     ```
+4. 獲得スタンプのリセット（デバッグ用）
+   - URL:`DELETE /api/events/unlocked`
+   - Header:`x-user-id: <UUID>`
+   - Response:
+     ```
+     { "success": true }
+
+
+## 🔗 今後の本番Webサイトへの統合手順
+本アプリケーションは、将来的に学園祭公式Webサイト（メインHP）へモジュールとして組み込むことを想定して設計されています。
+
+1. 画面コンポーネントの提供:
+   - src/features/joy および src/features/stamp ディレクトリを公式Webサイトのリポジトリへ移植します。
+2. ルーティングの接続:
+   - 現在 App.tsx 内で管理している State ベースの遷移（joy-top / scan）を、公式Webサイト側のルーター（React Router 等）のルーティング定義（/joy, /joy/scan など）へ置き換えます。
+3. API接続先の変更:
+  - ApiEventRepository.ts の baseUrl に本番APIサーバーのURLを設定し、main.tsx の MSW 起動処理を無効化（または本番ビルドから除外）することで本番DBへの接続へ切り替えます。
