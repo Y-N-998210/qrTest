@@ -47,7 +47,7 @@ export const unlock = (req: Request, res: Response) => {
         !/^[a-zA-Z0-9_-]+$/.test(eventId)
     ) {
         return res.status(400).json({
-            error: 'eventIdの形式が不正です（半角英数字、ハイフン、アンダースコアのみ使用可能）',
+            error: 'eventIdの形式が不正です(半角英数字、ハイフン、アンダースコアのみ使用可能）',
         });
     }
 

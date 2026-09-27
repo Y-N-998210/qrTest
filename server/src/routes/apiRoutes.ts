@@ -10,6 +10,7 @@ import {
 
 const router = Router();
 
+// エンドポイントをコントローラーにマッピング
 router.get('/events', getAllEvents);
 router.get('/events/unlocked', getUnlocked);
 router.post('/events/unlock', unlock);
