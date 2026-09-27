@@ -75,4 +75,17 @@ export const StampService = {
         );
         stmt.run(userId, eventId);
     },
+
+    /**
+     * 全イベントマスターデータの取得
+     * @returns 全イベント情報の配列
+     */
+    getAllEvents(): { id: string; title: string; description: string }[] {
+        const stmt = db.prepare('SELECT id, title, description FROM events');
+        return stmt.all() as {
+            id: string;
+            title: string;
+            description: string;
+        }[];
+    },
 };

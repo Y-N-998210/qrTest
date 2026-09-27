@@ -74,7 +74,7 @@ export class ApiEventRepository implements IEventRepository {
     }
 
     /**
-     * マスタデータ含む全イベント情報を取得 (GET /api/events)
+     * DB(SQLite)から全イベント情報(マスターデータ)を取得 (GET /api/events)
      */
     async getAllEvents(): Promise<EventItem[]> {
         try {

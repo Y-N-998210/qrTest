@@ -1,14 +1,16 @@
 import { Router } from 'express';
 import {
-  getUnlocked,
-  unlock,
-  getTotalPoints,
-  resetUserStamps,
-  deleteUserStamp,
+    getUnlocked,
+    unlock,
+    getTotalPoints,
+    resetUserStamps,
+    deleteUserStamp,
+    getAllEvents,
 } from '../controllers/stampController.js';
 
 const router = Router();
 
+router.get('/events', getAllEvents);
 router.get('/events/unlocked', getUnlocked);
 router.post('/events/unlock', unlock);
 router.get('/stats/total-points', getTotalPoints);

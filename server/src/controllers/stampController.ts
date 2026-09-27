@@ -104,3 +104,12 @@ export const deleteUserStamp = (req: Request, res: Response) => {
     // 204 No Content（成功・レスポンスボディなし）を返す
     return res.status(204).send();
 };
+
+/**
+ * 全イベント（スポット）マスター一覧を取得する API ハンドラー
+ * GET /api/events
+ */
+export const getAllEvents = (_req: Request, res: Response) => {
+    const events = StampService.getAllEvents();
+    return res.json(events);
+};
