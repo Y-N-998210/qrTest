@@ -3,14 +3,7 @@ import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App.tsx';
 
-// 元々
-// createRoot(document.getElementById('root')!).render(
-//   <StrictMode>
-//     <App />
-//   </StrictMode>,
-// )
-
-async function enableMocking() {
+// async function enableMocking() {
   // 開発環境（npm run dev）のときだけ MSW を起動
   // if (import.meta.env.DEV) {
   //   const { worker } = await import('./mocks/browser')
@@ -20,17 +13,26 @@ async function enableMocking() {
   // }
 
   // Vercelに上げるときはこっち使う
-  const { worker } = await import('./mocks/browser');
-  return worker.start({
-    onUnhandledRequest: 'bypass',
-  });
-}
+  // const { worker } = await import('./mocks/browser');
+  // return worker.start({
+  //   onUnhandledRequest: 'bypass',
+  // });
+// }
 
 // MSWの準備（または本番環境でのスキップ）が完了してからアプリをレンダリング
-enableMocking().then(() => {
-  createRoot(document.getElementById('root')!).render(
-    <StrictMode>
-      <App />
-    </StrictMode>,
-  );
-});
+// enableMocking().then(() => {
+//   createRoot(document.getElementById('root')!).render(
+//     <StrictMode>
+//       <App />
+//     </StrictMode>,
+//   );
+// });
+
+
+
+// MSWを起動せず、直接アプリを起動
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+);

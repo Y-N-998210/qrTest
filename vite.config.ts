@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   server: {
+    host: true, // 同じWi-Fi（ローカルネットワーク）に繋がっているスマホや他のPC・タブレットから、開発中のWebサイトにアクセスできるようになる(0.0.0.0でバインドしローカルネットワークに公開）
     proxy: {
       // /api で始まるリクエストをバックエンド (Express: 3001) へ転送
       '/api': {
