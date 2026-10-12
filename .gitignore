@@ -1,4 +1,7 @@
-# Logs
+# ==========================================
+# 1. ログファイル（ビルドや実行時の出力ログ）
+# ==========================================
+# デバッグ時やエラー発生時に自動作成されるログファイルを除外
 logs
 *.log
 npm-debug.log*
@@ -7,24 +10,56 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# ==========================================
+# 2. 依存パッケージとビルド成果物
+# ==========================================
+# 容量が非常に大きく、npm install等で再生成できるライブラリ群を除外
+node_modules/
+
+# プロジェクトのビルド（コンパイル）によって自動生成される出力フォルダを除外
+dist/
+dist-ssr/
+
+# ローカル開発時の個人の一時設定ファイル（例: .env.local 等）を除外
 *.local
 
-# Editor directories and files
+# ==========================================
+# 3. エディタ・OS固有の設定ファイル
+# ==========================================
+# VS Code の個人設定（共通拡張機能の推薦リスト以外）を除外
 .vscode/*
 !.vscode/extensions.json
-.idea
+
+# JetBrains（IntelliJ, WebStormなど）の設定フォルダを除外
+.idea/
+
+# macOS が自動生成するフォルダ情報ファイル（.DS_Store）を除外
 .DS_Store
+
+# Visual Studio などの関連設定・ソリューションファイルを除外
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
-# SQLite データベースと環境変数ファイルを Git 管理外にする
-server/*.sqlite
-server/*.sqlite-journal
-server/*.db
-server/.env
+# ==========================================
+# 4. データベース（SQLite）と環境変数（機密情報）
+# ==========================================
+# 名前のついたすべての SQLite データベースファイル（例: app.db など）を除外
+*.db
+
+# WAL（Write-Ahead Logging）モード使用時に生成される一時共有メモリ・ログファイルを除外
+*.db-shm
+*.db-wal
+
+# 拡張子が .sqlite / .sqlite3 のデータベースファイルを除外
+*.sqlite
+*.sqlite3
+
+# トランザクション処理中に生成されるジャーナルファイルを除外
+*.sqlite-journal
+
+# APIキーやパスワードなどの機密情報が入る環境変数ファイルを除外
+.env
+.env.*

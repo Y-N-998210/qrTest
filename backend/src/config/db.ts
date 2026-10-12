@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // データベースファイルの作成 / 接続
-const dbPath = path.join(__dirname, '../../db.sqlite');
+const dbPath = path.join(__dirname, '../../data/db.sqlite');
 const db = new Database(dbPath);
 
 // WALモードの有効化（パフォーマンス向上と同時実行エラー防止）
