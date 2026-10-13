@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { JoyTopPage } from './features/joy/JoyTopPage';
+import { BingoPage } from './features/bingo/BingoPage';
 import StampPage from './features/stamp/StampPage';
 
 export default function App() {
@@ -13,6 +14,8 @@ export default function App() {
     if (page === 'scan') {
       // QRコードリーダー画面へ
       setCurrentPage('scan');
+    } else if (page === 'bingo') {
+      setCurrentPage('bingo');
     } else if (page === 'joy-top') {
       // お楽しみ企画（Joy）のトップページへ
       setCurrentPage('joy-top');
@@ -45,6 +48,22 @@ export default function App() {
           </div>
 
           <StampPage />
+        </div>
+      )}
+
+      {/* ビンゴ画面へ */}
+      {currentPage === 'bingo' && (
+        <div>
+          <div className="bg-slate-800 text-white text-xs p-2 text-center flex justify-between items-center px-4">
+            <span className="font-bold">🎯 ビンゴ番号表示</span>
+            <button
+              onClick={() => setCurrentPage('joy-top')}
+              className="bg-blue-600 hover:bg-blue-500 text-white px-2.5 py-1 rounded text-[10px] font-bold transition"
+            >
+              ＜ お楽しみ企画TOPへ戻る
+            </button>
+          </div>
+          <BingoPage />
         </div>
       )}
     </div>
