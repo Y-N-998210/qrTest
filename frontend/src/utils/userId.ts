@@ -1,4 +1,5 @@
-const STORAGE_KEY = 'festival_user_id';
+const STORAGE_KEY = 'festival_player_number';
+const API_BASE = 'http://localhost:3001/api';
 
 /**
  * localStorageが利用可能かチェック
@@ -15,91 +16,39 @@ export const isLocalStorageAvailable = (): boolean => {
 };
 
 /**
- * UUIDを生成する
- * randomUUIDが使えない環境ではgetRandomValues()にフォールバック
+ * プレイヤーの連番IDを取得またはサーバーに新規登録して取得
  */
-const generateUserId = (): string => {
-    // crypto.randomUUID() が利用可能なら使用
-    if (
-        typeof crypto !== 'undefined' &&
-        typeof crypto.randomUUID === 'function'
-    ) {
-        return crypto.randomUUID();
-    }
-
-    // randomUUIDが使えない環境ではgetRandomValues()を使用
-    if (
-        typeof crypto !== 'undefined' &&
-        typeof crypto.getRandomValues === 'function'
-    ) {
-        const bytes = new Uint8Array(16);
-        crypto.getRandomValues(bytes);
-
-        // UUID v4
-        bytes[6] = (bytes[6] & 0x0f) | 0x40;
-        bytes[8] = (bytes[8] & 0x3f) | 0x80;
-
-        return [
-            [...bytes.slice(0, 4)],
-            [...bytes.slice(4, 6)],
-            [...bytes.slice(6, 8)],
-            [...bytes.slice(8, 10)],
-            [...bytes.slice(10, 16)],
-        ]
-            .map((group) =>
-                group
-                    .map((byte) => byte.toString(16).padStart(2, '0'))
-                    .join(''),
-            )
-            .join('-');
-    }
-
-    // crypto自体が利用できない場合の最終フォールバック
-    return `${Date.now()}-${Math.random().toString(36).slice(2)}-${Math.random()
-        .toString(36)
-        .slice(2)}`;
-};
-
-/**
- * ユーザーIDを取得または新規生成
- */
-export const getOrCreateUserId = (): string => {
-    // localStorageが使える場合
+export const getOrCreatePlayerNumber = async (): Promise<number> => {
+    // ローカルストレージにIDがあればそれを返す
     if (isLocalStorageAvailable()) {
-        const existingUserId = localStorage.getItem(STORAGE_KEY);
+        const savedId = localStorage.getItem(STORAGE_KEY);
+        if (savedId) {
+            const num = parseInt(savedId, 10);
+            if (!isNaN(num)) return num;
+        }
+    }
 
-        if (existingUserId) {
-            return existingUserId;
+    // なければバックエンドの登録APIを叩いて新規に連番を発行してもらう
+    try {
+        const res = await fetch(`${API_BASE}/users/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (!res.ok) {
+            throw new Error('Failed to register user on server');
         }
 
-        const userId = generateUserId();
+        const data = await res.json();
+        const playerId = data.playerId; // サーバー側で発行された連番 (1, 2, 3...)
 
-        try {
-            localStorage.setItem(STORAGE_KEY, userId);
-        } catch (error) {
-            console.warn('Failed to save userId to localStorage:', error);
+        if (playerId && isLocalStorageAvailable()) {
+            localStorage.setItem(STORAGE_KEY, playerId.toString());
         }
 
-        return userId;
-    }
-
-    // localStorageが使えない場合
-    console.warn(
-        'localStorage is not available. A temporary user ID will be used.',
-    );
-
-    return generateUserId();
-};
-
-/**
- * 手動でIDを設定（データ復元・他端末ID引き継ぎ用）
- */
-export const setManualUserId = (newUserId: string): void => {
-    if (isLocalStorageAvailable()) {
-        localStorage.setItem(STORAGE_KEY, newUserId);
-    } else {
-        console.warn(
-            'Cannot save user ID because localStorage is not available.',
-        );
+        return playerId ?? 1;
+    } catch (error) {
+        console.warn('サーバーとの通信に失敗しました。一時的なIDを使用します。', error);
+        return 1;
     }
 };

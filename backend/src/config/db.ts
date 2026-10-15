@@ -29,10 +29,15 @@ db.exec(`
     );
 
     CREATE TABLE IF NOT EXISTS bingo_numbers (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            number INTEGER NOT NULL UNIQUE,
-            called_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        );
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        number INTEGER NOT NULL UNIQUE,
+        called_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS app_users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
 `);
 
 // 初回起動時の初期データ設定(マスターデータ)（存在しない場合のみ挿入）

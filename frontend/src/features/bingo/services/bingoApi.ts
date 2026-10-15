@@ -1,7 +1,7 @@
 import type { BingoNumber } from "../types/bingo";
 
-// バックエンドのAPIベースURL（のちに調整)
-const API_BASE = 'http://localhost:3001/api';
+// バックエンドのAPIベースURL
+const API_BASE = '/api';
 
 export const bingoApi = {
     // 呼ばれた番号一覧取得
@@ -20,5 +20,13 @@ export const bingoApi = {
         });
         if (!res.ok) throw new Error('Failed to call number');
         return res.json();
+    },
+
+    // 指定した番号削除するAPI
+    async deleteNumber(number: number): Promise<void> {
+        const res = await fetch(`${API_BASE}/bingo/numbers/${number}`, {
+            method: 'DELETE',
+        });
+        if (!res.ok) throw new Error('Failed to delete number');
     },
 };

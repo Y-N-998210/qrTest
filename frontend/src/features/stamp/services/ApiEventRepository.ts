@@ -1,5 +1,5 @@
 import type { EventItem, IEventRepository } from '../types/event';
-import { getOrCreateUserId } from '../../../utils/userId';
+import { getOrCreatePlayerNumber } from '../../../utils/userId';
 
 /**
  *

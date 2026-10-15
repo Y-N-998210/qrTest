@@ -1,26 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import { getOrCreateUserId } from '../../utils/userId';
+import { getOrCreatePlayerNumber } from '../../utils/userId'; // ※ファイル名が userId.ts のままでも関数名を変更して対応可能
 
 interface JoyTopPageProps {
   onNavigate?: (page: string) => void;
 }
 
 export const JoyTopPage: React.FC<JoyTopPageProps> = ({ onNavigate }) => {
-  // パラメータ・状態管理 (後でAPI/Storeと接続可能)
-  const [totalPt] = useState(30); // 全体達成率パラメータ (0〜100pt)
-  const [userPt] = useState(30); // 自己達成率パラメータ
+  // パラメータ・状態管理
+  const [totalPt] = useState(30);
+  const [userPt] = useState(30);
   const [showHint, setShowHint] = useState(false);
   const [showStory, setShowStory] = useState(false);
-  const [hasBingoNotice, setHasBingoNotice] = useState(true);
-
-  // サポートID及びコピー状態管理
+  
+  // プレイヤー連番ID及びコピー状態管理
   const [copied, setCopied] = useState(false);
-  const userId = getOrCreateUserId();
+  const [playerId, setPlayerId] = useState<number | null>(null);
 
-  // サポートIDのクリップボードコピー処理
-  const handleCopyUserId = async () => {
+  // 起動時にサーバーから連番プレイヤーIDを取得・設定
+  useEffect(() => {
+    getOrCreatePlayerNumber().then((id) => {
+      setPlayerId(id);
+    });
+  }, []);
+
+  // プレイヤーIDのクリップボードコピー処理
+  const handleCopyPlayerId = async () => {
+    if (playerId === null) return;
     try {
-      await navigator.clipboard.writeText(userId);
+      await navigator.clipboard.writeText(playerId.toString());
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -68,7 +75,7 @@ export const JoyTopPage: React.FC<JoyTopPageProps> = ({ onNavigate }) => {
   return (
     <div className="min-h-screen bg-slate-50 text-gray-800 pb-16 max-w-md mx-auto relative border-x border-gray-200 flex flex-col justify-between">
       <div>
-        {/* 1. ヘッダーナビゲーション */}
+        {/* ヘッダーナビゲーション */}
         <header className="bg-white p-3 sticky top-0 z-20 shadow-sm flex items-center justify-between border-b">
           <button
             onClick={() => onNavigate?.('home')}
@@ -93,14 +100,6 @@ export const JoyTopPage: React.FC<JoyTopPageProps> = ({ onNavigate }) => {
               title="ストーリー"
             >
               📖
-            </button>
-            {/* マイスケジュール ショートカット */}
-            <button
-              onClick={() => onNavigate?.('schedule')}
-              className="p-2 bg-blue-100 rounded-full text-sm hover:bg-blue-200"
-              title="マイスケジュール"
-            >
-              📅
             </button>
             {/* QRリーダー ショートカット */}
             <button
@@ -180,7 +179,7 @@ export const JoyTopPage: React.FC<JoyTopPageProps> = ({ onNavigate }) => {
             ポイント獲得＆お楽しみ企画
           </h2>
 
-          {/* バナー 1: QRリーダー */}
+          {/*  QRリーダーバナー */}
           <button
             onClick={() => onNavigate?.('scan')}
             className="w-full bg-white p-4 rounded-2xl shadow-sm border border-blue-100 hover:border-blue-400 text-left flex items-center justify-between transition group"
@@ -201,7 +200,7 @@ export const JoyTopPage: React.FC<JoyTopPageProps> = ({ onNavigate }) => {
             <div className="text-3xl pl-2">📷</div>
           </button>
 
-          {/* バナー 2: 学校探検 */}
+          {/* 学校探検 */}
           <button
             onClick={() => onNavigate?.('map')}
             className="w-full bg-white p-4 rounded-2xl shadow-sm border border-green-100 hover:border-green-400 text-left flex items-center justify-between transition group"
@@ -217,7 +216,7 @@ export const JoyTopPage: React.FC<JoyTopPageProps> = ({ onNavigate }) => {
             <div className="text-3xl pl-2">🗺️</div>
           </button>
 
-          {/* バナー 3: イベント人気投票 */}
+          {/* イベント人気投票 */}
           <button
             onClick={() => onNavigate?.('vote')}
             className="w-full bg-white p-4 rounded-2xl shadow-sm border border-pink-100 hover:border-pink-400 text-left flex items-center justify-between transition group"
@@ -233,54 +232,13 @@ export const JoyTopPage: React.FC<JoyTopPageProps> = ({ onNavigate }) => {
             <div className="text-3xl pl-2">🗳️</div>
           </button>
 
-          {/* バナー 4: 思い出投稿 */}
-          <button
-            onClick={() => onNavigate?.('memories')}
-            className="w-full bg-white p-4 rounded-2xl shadow-sm border border-amber-100 hover:border-amber-400 text-left flex items-center justify-between transition group"
-          >
-            <div>
-              <h3 className="font-bold text-base text-gray-800 mb-1 group-hover:text-amber-600">
-                思い出 投稿
-              </h3>
-              <p className="text-xs text-gray-500">
-                投稿した写真がHPに載るかも！？
-              </p>
-            </div>
-            <div className="text-3xl pl-2">🖼️</div>
-          </button>
-
-          {/* バナー 5: マイスケジュール作成 */}
-          <button
-            onClick={() => onNavigate?.('schedule')}
-            className="w-full bg-white p-4 rounded-2xl shadow-sm border hover:border-purple-400 text-left flex items-center justify-between transition group"
-          >
-            <div>
-              <h3 className="font-bold text-base text-gray-800 mb-1 group-hover:text-purple-600">
-                マイスケジュールの作成
-              </h3>
-              <p className="text-xs text-gray-500">
-                自分だけのまわりかた予定表をつくろう！
-              </p>
-            </div>
-            <div className="text-3xl pl-2">📅</div>
-          </button>
-
-          {/* バナー 6: ビンゴ番号表示 (お知らせマーク付き) */}
+          {/* ビンゴ番号表示*/}
           <button
             onClick={() => {
-              setHasBingoNotice(false);
               onNavigate?.('bingo');
             }}
             className="w-full bg-white p-4 rounded-2xl shadow-sm border hover:border-indigo-400 text-left flex items-center justify-between transition group relative"
           >
-            {hasBingoNotice && (
-              <span className="absolute -top-1 -right-1 flex h-4 w-4">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-4 w-4 bg-red-500 text-[9px] text-white font-bold items-center justify-center">
-                  !
-                </span>
-              </span>
-            )}
             <div>
               <h3 className="font-bold text-base text-gray-800 mb-1 group-hover:text-indigo-600">
                 ビンゴ番号表示
@@ -346,19 +304,19 @@ export const JoyTopPage: React.FC<JoyTopPageProps> = ({ onNavigate }) => {
         )}
       </div>
 
-      {/* 6. フッター (サポートID / 復元用表示) */}
+      {/* 6. フッター (プレイヤーNo. / 復元用表示) */}
       <footer className="mt-8 py-4 px-4 bg-slate-100 border-t border-slate-200 text-center text-xs text-slate-500">
         <p className="mb-1 font-medium">帝祭2026 お楽しみ企画ポータル</p>
 
         <div className="inline-flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm mt-1">
           <span className="text-[10px] text-slate-400 font-mono">
-            サポートID:
+            プレイヤー番号:
           </span>
-          <span className="font-mono text-[11px] font-semibold text-slate-700 select-all">
-            {userId}
+          <span className="font-mono text-sm font-bold text-blue-600 select-all">
+            {playerId !== null ? `#${playerId}` : '読込中...'}
           </span>
           <button
-            onClick={handleCopyUserId}
+            onClick={handleCopyPlayerId}
             className="ml-1 text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-600 px-2 py-0.5 rounded transition font-sans active:bg-slate-300"
           >
             {copied ? '✓ コピー完了' : 'コピー'}
@@ -366,7 +324,7 @@ export const JoyTopPage: React.FC<JoyTopPageProps> = ({ onNavigate }) => {
         </div>
 
         <p className="text-[10px] text-slate-400 mt-2">
-          ※ブラウザのキャッシュを削除すると進行状況がリセットされる場合があります。
+          ※ブラウザのキャッシュを削除すると番号が再発行される場合があります。
         </p>
       </footer>
     </div>

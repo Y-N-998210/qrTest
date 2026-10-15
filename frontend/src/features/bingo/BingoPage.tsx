@@ -1,41 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import { bingoApi } from './services/bingoApi';
-import type { BingoNumber } from './types/bingo';
 
 export const BingoPage: React.FC = () => {
   const [calledNumbers, setCalledNumbers] = useState<number[]>([]);
   const [latestNumber, setLatestNumber] = useState<number | null>(null);
-  const [inputNum, setInputNum] = useState<string>('');
 
-  // データの取得
-  useEffect(() => {
-    bingoApi
-      .getCalledNumbers()
-      .then((data) => {
-        const numbers = data.map((item) => item.number);
-        setCalledNumbers(numbers);
-        if (numbers.length > 0) {
-          setLatestNumber(numbers[numbers.length - 1]);
-        }
-      })
-      .catch((err) => console.error(err));
-  }, []);
-
-  // 番号を呼ぶ(追加する)ハンドラー
-  const handleCallNumber = async (e: React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault(); // ページリロードを防止
-    const num = parseInt(inputNum, 10);
-    if (isNaN(num) || num < 1 || num > 75) return;
-
+  // データの取得（必要に応じて定期的にポーリングで最新化するとモニターとして完璧になります）
+  const fetchCalledNumbers = async () => {
     try {
-      await bingoApi.callNumber(num);
-      setCalledNumbers((prev) => [...prev, num]);
-      setLatestNumber(num);
-      setInputNum('');
+      const data = await bingoApi.getCalledNumbers();
+      const numbers = data.map((item) => item.number);
+      setCalledNumbers(numbers);
+      if (numbers.length > 0) {
+        setLatestNumber(numbers[numbers.length - 1]);
+      } else {
+        setLatestNumber(null);
+      }
     } catch (err) {
       console.error(err);
     }
   };
+
+  useEffect(() => {
+    fetchCalledNumbers();
+
+    // モニター画面として使う場合、数秒おきに自動でバックエンドから最新状況を取得すると便利です
+    const interval = setInterval(fetchCalledNumbers, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -51,29 +43,7 @@ export const BingoPage: React.FC = () => {
         </div>
       </div>
 
-      {/* テスト用：番号入力フォーム */}
-      <form
-        onSubmit={handleCallNumber}
-        className="flex gap-4 justify-center mb-8"
-      >
-        <input
-          type="number"
-          min="1"
-          max="75"
-          value={inputNum}
-          onChange={(e) => setInputNum(e.target.value)}
-          placeholder="番号 (1-75)"
-          className="border border-gray-300 rounded-lg px-4 py-2 w-40 text-center text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        />
-        <button
-          type="submit"
-          className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-indigo-700 transition"
-        >
-          番号を呼ぶ
-        </button>
-      </form>
-
-      {/* 1〜75の番号一覧グリッド */}
+      {/* 1〜75の番号一覧グリッド（入力フォームは削除しました） */}
       <div className="bg-white rounded-2xl p-6 shadow-md">
         <h2 className="text-xl font-bold mb-4 text-gray-700">
           これまでに呼ばれた番号一覧

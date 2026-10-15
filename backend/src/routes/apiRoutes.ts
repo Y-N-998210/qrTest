@@ -8,6 +8,7 @@ import {
     getAllEvents,
 } from '../controllers/stampController.js';
 import { getCalledNumbers, callNumber, deleteNumber } from '../controllers/bingoController.js';
+import { registerUser } from '../controllers/userController.js';
 
 const router = Router();
 
@@ -22,6 +23,7 @@ router.delete('/events/unlocked/:id', deleteUserStamp);
 router.get('/bingo/numbers', getCalledNumbers);
 router.post('/bingo/numbers', callNumber);
 router.delete('/bingo/numbers/:number', deleteNumber);
-
+// ユーザーID生成のエンドポイント
+router.post('/users/register', registerUser);
 
 export default router;
