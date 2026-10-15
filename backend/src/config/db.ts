@@ -27,6 +27,12 @@ db.exec(`
         title TEXT NOT NULL,
         description TEXT NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS bingo_numbers (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            number INTEGER NOT NULL UNIQUE,
+            called_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
 `);
 
 // 初回起動時の初期データ設定(マスターデータ)（存在しない場合のみ挿入）

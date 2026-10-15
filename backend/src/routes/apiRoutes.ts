@@ -7,6 +7,7 @@ import {
     deleteUserStamp,
     getAllEvents,
 } from '../controllers/stampController.js';
+import { getCalledNumbers, callNumber, deleteNumber } from '../controllers/bingoController.js';
 
 const router = Router();
 
@@ -17,5 +18,10 @@ router.post('/events/unlock', unlock);
 router.get('/stats/total-points', getTotalPoints);
 router.delete('/events/unlocked', resetUserStamps);
 router.delete('/events/unlocked/:id', deleteUserStamp);
+// ビンゴ関連のエンドポイント
+router.get('/bingo/numbers', getCalledNumbers);
+router.post('/bingo/numbers', callNumber);
+router.delete('/bingo/numbers/:number', deleteNumber);
+
 
 export default router;
