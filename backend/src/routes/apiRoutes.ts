@@ -6,6 +6,7 @@ import {
     resetUserStamps,
     deleteUserStamp,
     getAllEvents,
+    resetUserStampsByAdmin
 } from '../controllers/stampController.js';
 import { getCalledNumbers, callNumber, deleteNumber } from '../controllers/bingoController.js';
 import { registerUser } from '../controllers/userController.js';
@@ -25,5 +26,7 @@ router.post('/bingo/numbers', callNumber);
 router.delete('/bingo/numbers/:number', deleteNumber);
 // ユーザーID生成のエンドポイント
 router.post('/users/register', registerUser);
+//【管理者用】指定プレイヤーのスタンプリセット用エンドポイントを追加
+router.delete('/admin/users/:id/stamps', resetUserStampsByAdmin);
 
 export default router;

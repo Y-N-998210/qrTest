@@ -113,3 +113,23 @@ export const getAllEvents = (_req: Request, res: Response) => {
     const events = StampService.getAllEvents();
     return res.json(events);
 };
+
+/**
+ * 【管理者用】指定したプレイヤー番号（ID）のスタンプデータを一括リセットする API ハンドラー
+ * DELETE /api/admin/users/:id/stamps
+ */
+export const resetUserStampsByAdmin = (req: Request, res: Response) => {
+    const playerIdStr = req.params.id;
+    const playerId = parseInt(playerIdStr, 10);
+
+    if (isNaN(playerId)) {
+        return res.status(400).json({ error: '有効なプレイヤー番号（数値）を指定してください' });
+    }
+    
+    StampService.resetUserStamps(playerId.toString());
+    
+    return res.json({ 
+        success: true, 
+        message: `プレイヤー #${playerId} のスタンプデータをリセットしました。` 
+    });
+};
